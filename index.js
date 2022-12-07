@@ -59,22 +59,22 @@ async function webResponse(text, signature, message) {
   displayResponse(text);
 
   if (signature && message) {
-    let json = new Object();
-    json.signature = signature;
-    json.message = message;
-    json.contractAddress = "0x0be7bccA6be9fe768a953042fAE6D31224C7337a";
+    let request = new Object();
+    request.signature = signature.substring(2);
+    request.message = message;
+    request.contractAddress = "0x0be7bccA6be9fe768a953042fAE6D31224C7337a";
 
-    const url = 'http://dev4.icon-dev.sberlabs.com:10882/v1/nft/get_unlockables';
+    const url = 'https://dev4.icon-dev.sberlabs.com/v1/nft/get_unlockables';
     try {
       const response = await fetch(url, {
         method: 'POST', // или 'PUT'
-        body: JSON.stringify(json), // данные могут быть 'строкой' или {объектом}!
+        body: JSON.stringify(request), // данные могут быть 'строкой' или {объектом}!
         headers: {
           'Content-Type': 'application/json'
         }
       });
-      const json = await response.json();
-      console.log('Успех:', JSON.stringify(json));
+      const response_text = await response.json();
+      console.log('Успех:', JSON.stringify(response_text));
     } catch (error) {
       console.error('Ошибка:', error);
     }
