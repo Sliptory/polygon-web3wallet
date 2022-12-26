@@ -6,7 +6,7 @@
   "homepage": "https://sliptory.github.io/polygon-web3wallet",
   "scripts": {
     "start": "parcel index.html --open",
-    "build": "parcel build index.html --public-url /polygon-web3wallet"
+    "build": "parcel build index.html --public-url /web3wallet"
   },
   "dependencies": {
     "ethers": "5.5.1",
