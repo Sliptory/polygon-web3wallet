@@ -5,24 +5,20 @@ import { parseUnits, hexlify } from "ethers/lib/utils";
 let provider;
 let signer;
 
+const unlockablesURL = 'https://dev1.icon-dev.sberlabs.com/v1/nft/get_unlockables';
+const nftContractAddress = '0x0be7bccA6be9fe768a953042fAE6D31224C7337a';
+
 document.addEventListener("DOMContentLoaded", loadApp());
 
 async function loadApp() {
   const dapp = window.ethereum && window.ethereum.isMetaMask;
   const deepLink = window.location.hostname === "metamask.app.link";
   const mob = isMob();
-  const isSign = window.location.href.endsWith("sign");
 
   if (deepLink && !mob)
-    if(isSign)
-      window.location.replace("https://webgl.sberlabs.com/polygon-web3wallet/?action=sign");
-    else
-      window.location.replace("https://webgl.sberlabs.com/polygon-web3wallet/?action=get");
+    window.location.replace(`https://${window.location.pathname.substring(6)}`);
   else if (!deepLink && !dapp && mob)
-    if(isSign)
-      window.location.replace("https://metamask.app.link/dapp/webgl.sberlabs.com/polygon-web3wallet/?action=sign");
-    else
-      window.location.replace("https://metamask.app.link/dapp/webgl.sberlabs.com/polygon-web3wallet/?action=get");
+    window.location.replace(`https://metamask.app.link/dapp/${window.location.href.substring(8)}`);
   else {
     provider = new ethers.providers.Web3Provider(window.ethereum, "any");
     signer = provider.getSigner();
@@ -83,11 +79,10 @@ async function getResponse(text, signature, message) {
     let request = new Object();
     request.signature = signature.substring(2);
     request.message = message;
-    request.contractAddress = "0x0be7bccA6be9fe768a953042fAE6D31224C7337a";
+    request.contractAddress = nftContractAddress;
 
-    const url = 'https://dev1.icon-dev.sberlabs.com/v1/nft/get_unlockables';
     try {
-      const response = await fetch(url, {
+      const response = await fetch(unlockablesURL, {
         method: 'POST', // или 'PUT'
         body: JSON.stringify(request), // данные могут быть 'строкой' или {объектом}!
         headers: {
