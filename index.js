@@ -11,11 +11,18 @@ async function loadApp() {
   const dapp = window.ethereum && window.ethereum.isMetaMask;
   const deepLink = window.location.hostname === "metamask.app.link";
   const mob = isMob();
+  const isSign = window.location.href.endsWith("sign");
 
   if (deepLink && !mob)
-    window.location.replace("https://webgl.sberlabs.com/polygon-web3wallet/?action=sign");
+    if(isSign)
+      window.location.replace("https://webgl.sberlabs.com/polygon-web3wallet/?action=sign");
+    else
+      window.location.replace("https://webgl.sberlabs.com/polygon-web3wallet/?action=get");
   else if (!deepLink && !dapp && mob)
-    window.location.replace("https://metamask.app.link/dapp/webgl.sberlabs.com/polygon-web3wallet/?action=sign");
+    if(isSign)
+      window.location.replace("https://metamask.app.link/dapp/webgl.sberlabs.com/polygon-web3wallet/?action=sign");
+    else
+      window.location.replace("https://metamask.app.link/dapp/webgl.sberlabs.com/polygon-web3wallet/?action=get");
   else {
     provider = new ethers.providers.Web3Provider(window.ethereum, "any");
     signer = provider.getSigner();
@@ -30,7 +37,9 @@ function processAction() {
   const action = urlParams.get("action");
 
   if (action === "sign") {
-    return signMessage();
+    return signAction();
+  } else if (action === "get") {
+    return getAction();
   }
 
   displayResponse("Invalid URL");
@@ -45,17 +54,29 @@ async function signMessage() {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     const signature = await signer.signMessage(message);
     console.log({ signature });
-    if (isMob())
-      mobResponse("Signature complete.<br><br>Copy to clipboard then continue to App", signature, message);
-    else
-      webResponse("Signature complete", signature, message);
+    
+    return [message, signature];
   } catch (error) {
     copyToClipboard("error");
     displayResponse("Signature Denied");
+    
+    return ["error", "error"];
   }
 }
 
-async function webResponse(text, signature, message) {
+async function signAction() {
+  const [message, signature] = await signMessage();
+  if(message != "error")
+    signResponse("Signature complete.<br><br>Copy to clipboard then continue to App", signature, message);
+}
+
+async function getAction() {
+  const [message, signature] = await signMessage();
+  if(message != "error")
+    getResponse("Signature complete", signature, message);
+}
+
+async function getResponse(text, signature, message) {
   displayResponse(text);
 
   if (signature && message) {
@@ -81,7 +102,7 @@ async function webResponse(text, signature, message) {
   }
 }
 
-function mobResponse(text, signature, message) {
+function signResponse(text, signature, message) {
   displayResponse(text);
   if (signature && message) {
     let json = new Object();
