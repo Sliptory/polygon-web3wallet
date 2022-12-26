@@ -85,7 +85,7 @@ async function getResponse(text, signature, message) {
     request.message = message;
     request.contractAddress = "0x0be7bccA6be9fe768a953042fAE6D31224C7337a";
 
-    const url = 'https://dev4.icon-dev.sberlabs.com/v1/nft/get_unlockables';
+    const url = 'https://dev1.icon-dev.sberlabs.com/v1/nft/get_unlockables';
     try {
       const response = await fetch(url, {
         method: 'POST', // или 'PUT'
