@@ -53,7 +53,6 @@ async function signMessage() {
     
     return [message, signature];
   } catch (error) {
-    copyToClipboard("error");
     displayResponse("Signature Denied");
     
     return ["error", "error"];
@@ -64,6 +63,8 @@ async function signAction() {
   const [message, signature] = await signMessage();
   if(message != "error")
     signResponse("Signature complete.<br><br>Copy to clipboard then continue to App", signature, message);
+  else
+    copyToClipboard("error");
 }
 
 async function getAction() {
